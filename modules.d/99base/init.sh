@@ -126,6 +126,15 @@ make_trace_mem "hook cmdline" '1+:mem' '1+:iomem' '3+:slab'
 getarg 'rd.break=cmdline' -d 'rdbreak=cmdline' && emergency_shell -n cmdline "Break before cmdline"
 source_hook cmdline
 
+modprobe fuse
+export FUSE_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/libfuse.so.2
+SpaceFS /dev/sdb1 /sysroot 1
+
+mount --rbind /sys /sysroot/sys
+mount --rbind /dev /sysroot/dev
+mount -t proc /proc /sysroot/proc
+exec chroot /sysroot /sbin/init
+
 [ -z "$root" ] && die "No or empty root= argument"
 [ -z "$rootok" ] && die "Don't know how to handle 'root=$root'"
 
